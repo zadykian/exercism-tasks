@@ -24,7 +24,7 @@ let allCapitals (input: string) =
     && capitals |> Seq.forall System.Char.IsUpper
 
 let endsWithQuestionMark =
-    Seq.filter (System.Char.IsWhiteSpace >> not) 
+    Seq.filter (System.Char.IsWhiteSpace >> not)
     >> Seq.tryLast
     >> function
         | Some char -> char = '?'
@@ -51,7 +51,7 @@ let respondToSilence =
         "Fine. Be that way!"
 
 let defaultResponse = function
-    | Responded responseText -> responseText 
+    | Responded responseText -> responseText
     | NotResponded _         -> "Whatever."
 
 let response (input: string): string =
@@ -61,4 +61,3 @@ let response (input: string): string =
     |> ifNotRespondedDo respondToYelledQuestion
     |> ifNotRespondedDo respondToSilence
     |> defaultResponse
-    
