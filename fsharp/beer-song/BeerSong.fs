@@ -14,7 +14,7 @@ let singleVerse (bottlesCount: int): seq<string> =
         | _ -> "no more bottles"
 
     let whatToTake = if bottlesCount = 1 then "it" else "one"
-    
+
     let verse =
         if bottlesCount > 0
         then
