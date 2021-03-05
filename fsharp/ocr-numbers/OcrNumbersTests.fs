@@ -167,3 +167,15 @@ let ``Numbers separated by empty lines are recognized. Lines are joined by comma
           "         " ]
     convert rows |> should equal (Some "123,456,789")
 
+[<Fact>]
+let ``Invalid cell size in multiple lines input returns None`` () =
+    let rows = 
+        [ "    _  _ ";
+          "  | _| _|";
+          "  ||_  _|";
+          " _  _  _  ";
+          "  ||_||_| ";
+          "  ||_| _| ";
+          "          " ]
+    convert rows |> should equal None
+

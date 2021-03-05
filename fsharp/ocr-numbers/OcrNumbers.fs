@@ -111,13 +111,12 @@ let convert (input: string list): string option =
             row |> Seq.length <> 4 ||
             row |> Seq.exists (fun line -> line.Length % 3 <> 0))
 
-    let digitsString =
+    let digitCharacters =
         rawDigitRows
             |> Seq.map parseSingleRow
             |> Seq.map (Seq.map parseCell)
             |> intersperse (List.toSeq [','])
             |> Seq.collect id
-            |> String.Concat
 
     if hasInvalidRows then None
-    else Some digitsString
+    else Some (digitCharacters |> String.Concat)
