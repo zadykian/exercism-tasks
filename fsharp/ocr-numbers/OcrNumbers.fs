@@ -37,7 +37,7 @@ let private parseSingleRow (inputRow: string list): DigitRow =
         |> Seq.map (fun line -> line |> Seq.chunkBySize 3 |> Seq.map Array.toSeq)
         |> zipseq
         |> Seq.map toSingleDigit
-        |> Seq.toList   
+        |> Seq.toList
 
 let private parseCell (digitCell: DigitCell): char = failwith "not implemented!"
 
