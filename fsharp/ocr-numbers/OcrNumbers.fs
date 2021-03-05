@@ -45,27 +45,27 @@ let private parseCell (digitCell: DigitCell): char =
             ([ " _ ";
                "| |";
                "|_|";
-               "   " ], 0uy);
+               "   " ], 0uy)
 
             ([ "   ";
                "  |";
                "  |";
-               "   " ], 1uy);
+               "   " ], 1uy)
 
             ([ " _ ";
                " _|";
                "|_ ";
-               "   " ], 2uy);
+               "   " ], 2uy)
 
             ([ " _ ";
                " _|";
                " _|";
-               "   " ], 3uy);
+               "   " ], 3uy)
 
             ([ "   ";
                "|_|";
                "  |";
-               "   " ], 4uy);
+               "   " ], 4uy)
 
             ([ " _ ";
                "|_ ";
@@ -90,7 +90,7 @@ let private parseCell (digitCell: DigitCell): char =
             ([ " _ ";
                "|_|";
                " _|";
-               "   " ], 9uy);
+               "   " ], 9uy)
         ]
         |> Map.ofList
 
