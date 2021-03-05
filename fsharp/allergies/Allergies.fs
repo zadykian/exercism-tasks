@@ -1,6 +1,7 @@
 ﻿module Allergies
 
 open System
+open System.Reflection
 
 [<Flags>]
 type Allergen =
@@ -13,6 +14,13 @@ type Allergen =
     | Pollen = 64
     | Cats = 128
 
-let allergicTo (codedAllergies: int) (allergen: Allergen): bool = failwith "You need to implement this function."
+let allergicTo (codedAllergies: int) (allergen: Allergen): bool =
+     enum<Allergen>(codedAllergies).HasFlag(allergen)
 
-let list (codedAllergies: int): Allergen list = failwith "You need to implement this function."
+let list (codedAllergies: int): Allergen list =    
+    typeof<Allergen>
+        .GetFields(BindingFlags.Public ||| BindingFlags.Static)
+        |> Seq.map (fun fieldInfo -> fieldInfo.GetValue())
+        |> Seq.cast<Allergen>
+        |> Seq.filter (enum<Allergen>(codedAllergies).HasFlag)
+        |> Seq.toList
