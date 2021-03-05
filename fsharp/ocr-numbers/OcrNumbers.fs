@@ -39,7 +39,64 @@ let private parseSingleRow (inputRow: string list): DigitRow =
         |> Seq.map toSingleDigit
         |> Seq.toList
 
-let private parseCell (digitCell: DigitCell): char = failwith "not implemented!"
+let private parseCell (digitCell: DigitCell): char =
+    let cellsToDigits : Map<DigitCell, byte> =
+        [
+            ([ " _ ";
+               "| |";
+               "|_|";
+               "   " ], 0uy);
+
+            ([ "   ";
+               "  |";
+               "  |";
+               "   " ], 1uy);
+
+            ([ " _ ";
+               " _|";
+               "|_ ";
+               "   " ], 2uy);
+
+            ([ " _ ";
+               " _|";
+               " _|";
+               "   " ], 3uy);
+
+            ([ "   ";
+               "|_|";
+               "  |";
+               "   " ], 4uy);
+
+            ([ " _ ";
+               "|_ ";
+               " _|";
+               "   " ], 5uy)
+
+            ([ " _ ";
+               "|_ ";
+               "|_|";
+               "   " ], 6uy)
+
+            ([ " _ ";
+               "  |";
+               "  |";
+               "   " ], 7uy)
+
+            ([ " _ ";
+               "|_|";
+               "|_|";
+               "   " ], 8uy)
+
+            ([ " _ ";
+               "|_|";
+               " _|";
+               "   " ], 9uy);
+        ]
+        |> Map.ofList
+
+    match cellsToDigits.TryFind digitCell with
+        | Some digit -> sprintf "%i" digit |> Seq.last
+        | None       -> '?'
 
 let convert (input: string list): string option =
     let rawDigitRows =
