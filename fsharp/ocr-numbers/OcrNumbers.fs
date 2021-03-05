@@ -12,7 +12,32 @@ let private intersperse (item: 'T) (sequence: seq<'T>): seq<'T> =
     |> Seq.mapi (fun index item -> index, item)
     |> Seq.choose (fun (index, item) -> if index = 0 then None else Some item)
 
-let private parseSingleRow (row: string list): DigitRow = failwith "not implemented!"
+let private zipseq<'T> (input: seq<seq<'T>>): seq<seq<'T>> =
+    let enumerators =
+        input
+        |> Seq.map (fun seq -> seq.GetEnumerator())
+        |> Seq.toList
+
+    let moveNextForAll() =
+        enumerators
+        |> Seq.forall (fun enumerator -> enumerator.MoveNext())
+
+    seq {
+        while moveNextForAll() do
+            yield enumerators |> Seq.map (fun enumerator -> enumerator.Current)
+    }
+
+let private parseSingleRow (inputRow: string list): DigitRow =
+    let toSingleDigit (chunk: seq<seq<char>>): DigitCell = 
+        chunk
+            |> Seq.map String.Concat
+            |> Seq.toList
+
+    inputRow
+        |> Seq.map (fun line -> line |> Seq.chunkBySize 3 |> Seq.map Array.toSeq)
+        |> zipseq
+        |> Seq.map toSingleDigit
+        |> Seq.toList   
 
 let private parseCell (digitCell: DigitCell): char = failwith "not implemented!"
 
