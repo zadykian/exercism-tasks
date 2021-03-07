@@ -4,21 +4,21 @@ type Word =
     | Translated of string
     | Untranslated of string
 
-let private translateIfSatisfies
-    (predicate: string -> bool)
-    (translator: string -> string)
-    (word: Word): Word =
+let private translateIfSatisfies (predicate: string -> bool) (translator: string -> string) (word: Word): Word =
 
     match word with
-    | Translated translated     -> Translated translated
+    | Translated translated -> Translated translated
     | Untranslated untranslated ->
-        if predicate untranslated then Translated (translator untranslated)
+        if predicate untranslated
+        then Translated   (translator untranslated)
         else Untranslated untranslated
 
 let startsWithVowelSound (word: string): bool =
     match word |> Seq.toList with
-    | fst :: (snd :: _) -> ['a'; 'e'; 'i'; 'o'; 'u'] |> Seq.contains fst || [fst; snd] = ['x'; 'r']
-    | _                 -> false
+    | fst :: (snd :: _) ->
+        [ 'a'; 'e'; 'i'; 'o'; 'u' ] |> Seq.contains fst
+        || $"{fst}{snd}" = "xr"
+    | _ -> false
 
 let tryGetConsonant (word: string): string option = failwith "not implemented!"
 
@@ -27,12 +27,18 @@ let private translateWord (inputWord: string): string =
         inputWord
         |> Untranslated
         |> translateIfSatisfies startsWithVowelSound (fun w -> $"{w}ay")
+        |> translateIfSatisfies
+            (fun w -> (tryGetConsonant w).IsSome)
+            (fun w ->
+                match tryGetConsonant w with
+                | Some consonant -> w.Replace(consonant, "") + consonant + "ay"
+                | None -> w)
 
     match handledWord with
-    | Translated word   -> word
+    | Translated word -> word
     | Untranslated word -> word
 
 let translate (input: string): string =
     input.Split(' ')
-        |> Seq.map translateWord
-        |> String.concat " "
+    |> Seq.map translateWord
+    |> String.concat " "
