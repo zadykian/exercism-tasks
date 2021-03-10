@@ -20,7 +20,32 @@ let startsWithVowelSound (word: string): bool =
         || $"{fst}{snd}" = "xr"
     | _ -> false
 
-let tryGetConsonantFromBeginning (word: string): string option = failwith "not implemented!"
+let tryGetConsonantFromBeginning (word: string): string option =
+
+    let consonantLetters =
+        [
+            "b"; "c"; "d"; "f"; "g"; "h"; "j"; "k"
+            "l"; "m"; "n"; "p"; "q"; "r"; "s"; "t"
+            "v"; "w"; "x"; "y"; "z"
+        ]
+
+    let consonantDigraphs =
+        [
+            "bl"; "br"; "ch"; "ck"; "cl"; "cr"; "dr"; "fl"
+            "fr"; "gh"; "gl"; "gr"; "ng"; "ph"; "pl"; "pr"
+            "qu"; "sc"; "sh"; "sk"; "sl"; "sm"; "sn"; "sp"
+            "st"; "sw"; "th"; "tr"; "tw"; "wh"; "wr"
+        ]
+
+    let consonantTrigraphs =
+        [
+            "nth"; "sch"; "scr"; "shr"; "spl"
+            "spr"; "squ"; "str"; "thr"
+        ]
+
+    [ consonantLetters; consonantDigraphs; consonantTrigraphs ]
+        |> Seq.concat 
+        |> Seq.tryFind word.StartsWith
 
 let private translateWord (inputWord: string): string =
     let handledWord =
