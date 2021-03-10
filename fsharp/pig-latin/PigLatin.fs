@@ -20,7 +20,7 @@ let startsWithVowelSound (word: string): bool =
         || $"{fst}{snd}" = "xr"
     | _ -> false
 
-let tryGetConsonant (word: string): string option = failwith "not implemented!"
+let tryGetConsonantFromBeginning (word: string): string option = failwith "not implemented!"
 
 let private translateWord (inputWord: string): string =
     let handledWord =
@@ -28,9 +28,9 @@ let private translateWord (inputWord: string): string =
         |> Untranslated
         |> translateIfSatisfies startsWithVowelSound (fun w -> $"{w}ay")
         |> translateIfSatisfies
-            (fun w -> (tryGetConsonant w).IsSome)
+            (fun w -> (tryGetConsonantFromBeginning w).IsSome)
             (fun w ->
-                match tryGetConsonant w with
+                match tryGetConsonantFromBeginning w with
                 | Some consonant -> w.Replace(consonant, "") + consonant + "ay"
                 | None -> w)
 
