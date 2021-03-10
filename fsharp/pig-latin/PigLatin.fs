@@ -17,10 +17,24 @@ let startsWithVowelSound (word: string): bool =
     match word |> Seq.toList with
     | fst :: (snd :: _) ->
         [ 'a'; 'e'; 'i'; 'o'; 'u' ] |> Seq.contains fst
-        || $"{fst}{snd}" = "xr"
+        || ["xr"; "yt"] |> Seq.contains $"{fst}{snd}" 
     | _ -> false
 
 let tryGetConsonantFromBeginning (word: string): string option =
+    
+    let consonantTrigraphs =
+        [
+            "nth"; "sch"; "scr"; "shr"; "spl"
+            "spr"; "squ"; "str"; "thr"
+        ]
+
+    let consonantDigraphs =
+        [
+            "bl"; "br"; "ch"; "ck"; "cl"; "cr"; "dr"; "fl"
+            "fr"; "gh"; "gl"; "gr"; "ng"; "ph"; "pl"; "pr"
+            "qu"; "rh"; "sc"; "sh"; "sk"; "sl"; "sm"; "sn"
+            "sp"; "st"; "sw"; "th"; "tr"; "tw"; "wh"; "wr"
+        ]
 
     let consonantLetters =
         [
@@ -29,21 +43,7 @@ let tryGetConsonantFromBeginning (word: string): string option =
             "v"; "w"; "x"; "y"; "z"
         ]
 
-    let consonantDigraphs =
-        [
-            "bl"; "br"; "ch"; "ck"; "cl"; "cr"; "dr"; "fl"
-            "fr"; "gh"; "gl"; "gr"; "ng"; "ph"; "pl"; "pr"
-            "qu"; "sc"; "sh"; "sk"; "sl"; "sm"; "sn"; "sp"
-            "st"; "sw"; "th"; "tr"; "tw"; "wh"; "wr"
-        ]
-
-    let consonantTrigraphs =
-        [
-            "nth"; "sch"; "scr"; "shr"; "spl"
-            "spr"; "squ"; "str"; "thr"
-        ]
-
-    [ consonantLetters; consonantDigraphs; consonantTrigraphs ]
+    [ consonantTrigraphs; consonantDigraphs; consonantLetters ]
         |> Seq.concat 
         |> Seq.tryFind word.StartsWith
 
