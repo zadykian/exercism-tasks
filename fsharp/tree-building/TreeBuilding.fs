@@ -16,20 +16,20 @@ type Tree =
 
 let recordId t =
     match t with
-    | Branch (id, c) -> id
-    | Leaf id -> id
+    | Branch (id, _) -> id
+    | Leaf id        -> id
 
-let isBranch t =
-    match t with
-    | Branch (id, c) -> true
-    | Leaf id -> false
+let isBranch (tree: Tree): bool =
+    match tree with
+    | Branch _ -> true
+    | Leaf   _ -> false
 
 let children t =
     match t with
-    | Branch (id, c) -> c
-    | Leaf id -> []
+    | Branch (_, children) -> children
+    | Leaf    _            -> []
 
-let buildTree records =
+let buildTree (records: Record list): Tree =
     let records' = List.sortBy (fun x -> x.RecordId) records
 
     if List.isEmpty records' then failwith "Empty input"

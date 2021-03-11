@@ -22,7 +22,7 @@ type BenchmarkConfig() =
     let columnProvider =
         {
             new IColumnProvider with
-                member __.GetColumns(summary: Summary) =
+                member this.GetColumns(summary: Summary) =
                     seq {
                         yield TargetMethodColumn.Method
                         yield StatisticColumn.Mean
@@ -39,12 +39,11 @@ type BenchmarkConfig() =
         }
 
     do
-        base.Add(columnProvider)
-        base.Add(MemoryDiagnoser.Default)
-        base.Add(new ConsoleLogger());
+        base.AddColumnProvider(columnProvider) |> ignore
+        base.AddDiagnoser(MemoryDiagnoser.Default) |> ignore
+        base.AddLogger(ConsoleLogger()) |> ignore
 
 [<EntryPoint>]
 let main _ =
     BenchmarkRunner.Run<Benchmarks>(BenchmarkConfig()) |> ignore
-
     0
