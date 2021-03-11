@@ -74,9 +74,9 @@ type Benchmarks () =
         ]
 
     [<Benchmark(Baseline = true)>]
-    member __.Baseline () =
+    member this.Baseline () =
         inputs |> run TreeBuildingBaseline.buildTree
 
     [<Benchmark>]
-    member __.Mine () =
+    member this.Mine () =
         inputs |> run TreeBuilding.buildTree
