@@ -33,12 +33,15 @@ let children t =
     | Leaf _        -> []
 
 let rec private hasCycles (tree: Tree): bool =
-    let withAcc (subtree: Tree) (acc: int list): bool =
-        false
 
-    match tree with
-    | Branch (_, children) -> withAcc tree []
-    | Leaf _ -> false
+    let rec withAcc (subtree: Tree) (acc: int list): bool =
+        match subtree with
+        | Branch (id, children) ->
+            (acc |> List.contains id)
+            || (children |> Seq.exists (fun t -> withAcc t (id :: acc)))
+        | Leaf id -> acc |> List.contains id
+
+    withAcc tree []
 
 let private rules =
     [
@@ -49,6 +52,14 @@ let private rules =
             "records list does not contain root!"
         )
 
+        (
+            (fun records -> (records
+                             |> Seq.filter (fun r -> r.RecordId = r.ParentId)
+                             |> Seq.length
+                             <= 1)),
+            "records list has more then one root!"
+        )
+        
         (
             List.forall (fun record -> record.RecordId >= record.ParentId),
             "at least one record contains value smaller that its' parent one!"
@@ -76,6 +87,7 @@ let rec private buildForRoot (records: Record list) (rootId: int): Tree =
     let children =
         records
         |> Seq.filter (fun record -> record.RecordId <> rootId && record.ParentId = rootId)
+        |> Seq.sortBy (fun record -> record.RecordId)
         |> Seq.map (fun record -> buildForRoot records record.RecordId)
         |> Seq.toList
 
