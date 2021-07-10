@@ -44,4 +44,4 @@ let buildTree (records: Record list): Tree =
     let rootOption = List.tryFind (fun record -> record.RecordId = record.ParentId) records
     match rootOption with
     | Some root -> buildForRoot records root.RecordId
-    | None      -> invalidArg (nameof records) "records list does not contain root!"
+    | None      -> failwith "records list does not contain root!"
