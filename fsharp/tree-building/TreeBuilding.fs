@@ -32,40 +32,51 @@ let children t =
     | Branch (_, c) -> c
     | Leaf _        -> []
 
+let private hasCyclicDependencies (records: Record list): bool =
+
+    let foldRecs (hasDuplicates:bool, found: Record list) (current: Record) =
+        (hasDuplicates, found)
+    
+    match records with
+    | _ :: tail -> (Seq.fold foldRecs (false, []) tail) |> fst
+    | _         -> true
+    
+let private rules =
+    [
+        (
+            (fun records -> match records |> List.tryHead with
+                            | Some head -> head.RecordId = head.ParentId
+                            | None -> false),
+            "records list does not contain root!"
+        )
+
+        (
+            List.forall (fun record -> record.RecordId >= record.ParentId),
+            "at least one record contains value smaller that its' parent one!"
+        )
+        
+        (
+            (fun records -> List.forall (fun record -> record.RecordId < records.Length) records),
+            "at least one record contains value which exceeds records count!"
+        )
+        
+        (
+            hasCyclicDependencies >> not,
+            "records list contains cyclic dependencies!"
+        )
+    ]
+
 let private validate (records: Record list): Result<unit, ValidationMessage> =
     let ordered = records |> List.sortBy (fun record -> record.RecordId)
 
-    let rules =
-        [
-            (
-                (fun records -> match records |> List.tryHead with
-                                | Some head -> head.RecordId = head.ParentId
-                                | None -> false),
-                "records list does not contain root!"
-            )
-
-            (
-                List.forall (fun record -> record.RecordId >= record.ParentId),
-                "at least one record contains value smaller that its' parent one"
-            )
-            
-            (
-                (List.forall (fun record -> record.RecordId < records.Length)),
-                "at least one record contains value which exceeds records count"
-            )
-            
-            (
-                (fun records -> true), // todo: check list for cyclic dependencies
-                ""
-            )
-            
-        ]
+    let failedRules =
+        rules
         |> Seq.filter (fun (validationFunc, _) -> validationFunc ordered |> not)
         |> Seq.toArray
 
-    if Seq.isEmpty rules
+    if Seq.isEmpty failedRules
     then Ok ()
-    else Error (rules |> Seq.fold (fun res (_, msg) -> res + Environment.NewLine + msg) String.Empty)
+    else Error (failedRules |> Seq.fold (fun res (_, msg) -> res + Environment.NewLine + msg) String.Empty)
 
 let rec private buildForRoot (records: Record list) (rootId: int): Tree =
     let children =
