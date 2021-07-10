@@ -5,6 +5,7 @@
 		<IsPackable>false</IsPackable>
 		<OutputType>Exe</OutputType>
 		<GenerateProgramFile>false</GenerateProgramFile>
+		<Optimize>true</Optimize>
 	</PropertyGroup>
 
 	<ItemGroup>
