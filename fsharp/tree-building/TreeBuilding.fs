@@ -32,15 +32,14 @@ let children t =
     | Branch (_, c) -> c
     | Leaf _        -> []
 
-let private hasCyclicDependencies (records: Record list): bool =
+let rec private hasCycles (tree: Tree): bool =
+    let withAcc (subtree: Tree) (acc: int list): bool =
+        false
 
-    let foldRecs (hasDuplicates:bool, found: Record list) (current: Record) =
-        (hasDuplicates, found)
-    
-    match records with
-    | _ :: tail -> (Seq.fold foldRecs (false, []) tail) |> fst
-    | _         -> true
-    
+    match tree with
+    | Branch (_, children) -> withAcc tree []
+    | Leaf _ -> false
+
 let private rules =
     [
         (
@@ -58,11 +57,6 @@ let private rules =
         (
             (fun records -> List.forall (fun record -> record.RecordId < records.Length) records),
             "at least one record contains value which exceeds records count!"
-        )
-        
-        (
-            hasCyclicDependencies >> not,
-            "records list contains cyclic dependencies!"
         )
     ]
 
@@ -96,7 +90,11 @@ let buildTree (records: Record list): Tree =
             |> Seq.filter (fun record -> record.RecordId = record.ParentId)
             |> Seq.exactlyOne
 
-        buildForRoot records root.RecordId
+        let tree = buildForRoot records root.RecordId
+
+        if hasCycles tree
+        then failwith "tree contains cyclic dependencies!"
+        else tree
         
     match validate records with
     | Ok _          -> buildTree ()
