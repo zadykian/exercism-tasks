@@ -43,11 +43,11 @@ let private validate (records: Record list): Result<unit, ValidationMessage> =
             )
 
             (
-                List.forall (fun record -> record.RecordId <= record.ParentId),
-                "some record contains value larger that its' parent one"
+                List.forall (fun record -> record.RecordId >= record.ParentId),
+                "some record contains value smaller that its' parent one"
             )
         ]
-        |> Seq.filter (fun (validationFunc, _) -> validationFunc ordered)
+        |> Seq.filter (fun (validationFunc, _) -> validationFunc ordered |> not)
         |> Seq.toArray
 
     if Seq.isEmpty rules
