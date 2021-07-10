@@ -8,11 +8,14 @@
 
 module TreeBuilding
 
+open System
 open TreeBuildingTypes
 
 type Tree =
     | Branch of int * Tree list
     | Leaf of int
+
+type ValidationMessage = string
 
 let recordId t =
     match t with
@@ -29,6 +32,28 @@ let children t =
     | Branch (_, c) -> c
     | Leaf _        -> []
 
+let private validate (records: Record list): Result<unit, ValidationMessage> =
+    let ordered = records |> List.sortBy (fun record -> record.RecordId)
+
+    let rules =
+        [
+            (
+                List.tryHead >> Option.isSome,
+                "records list does not contain root!"
+            )
+
+            (
+                List.forall (fun record -> record.RecordId <= record.ParentId),
+                "some record contains value larger that its' parent one"
+            )
+        ]
+        |> Seq.filter (fun (validationFunc, _) -> validationFunc ordered)
+        |> Seq.toArray
+
+    if Seq.isEmpty rules
+    then Ok ()
+    else Error (rules |> Seq.fold (fun res (_, msg) -> res + Environment.NewLine + msg) String.Empty)
+
 let rec private buildForRoot (records: Record list) (rootId: int): Tree =
     let children =
         records
@@ -41,7 +66,14 @@ let rec private buildForRoot (records: Record list) (rootId: int): Tree =
     else Branch (rootId, children)
 
 let buildTree (records: Record list): Tree =
-    let rootOption = List.tryFind (fun record -> record.RecordId = record.ParentId) records
-    match rootOption with
-    | Some root -> buildForRoot records root.RecordId
-    | None      -> failwith "records list does not contain root!"
+    let buildTree () =
+        let root =
+            records
+            |> Seq.filter (fun record -> record.RecordId = record.ParentId)
+            |> Seq.exactlyOne
+
+        buildForRoot records root.RecordId
+        
+    match validate records with
+    | Ok _          -> buildTree ()
+    | Error message -> failwith message 
