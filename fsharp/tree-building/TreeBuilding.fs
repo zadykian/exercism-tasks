@@ -43,22 +43,19 @@ let private rules =
         )
 
         (
-            List.forall (fun record -> record.RecordId >= record.ParentId),
-            "at least one record contains value smaller that its' parent one!"
-        )
-
-        (
-            (fun records -> List.forall (fun record -> record.RecordId < records.Length) records),
+            (fun (records: Record list) ->
+                List.forall
+                    (fun record -> record.RecordId < records.Length && record.RecordId >= record.ParentId)
+                    records),
             "at least one record contains value which exceeds records count!"
         )
     ]
 
 let private validate (records: Record list): Result<unit, ValidationMessage> =
-    let ordered = records |> List.sortBy (fun record -> record.RecordId)
 
     let failedRules =
         rules
-        |> Seq.filter (fun (validationFunc, _) -> validationFunc ordered |> not)
+        |> Seq.filter (fun (validationFunc, _) -> validationFunc records |> not)
         |> Seq.toArray
 
     if Seq.isEmpty failedRules
@@ -78,14 +75,11 @@ let rec private buildForRoot (records: Record list) (rootId: int): Tree =
     else Branch (rootId, children)
 
 let buildTree (records: Record list): Tree =
+    let ordered = records |> List.sortBy (fun record -> record.RecordId)
+    
     let buildTree () =
-        let root =
-            records
-            |> Seq.filter (fun record -> record.RecordId = record.ParentId)
-            |> Seq.exactlyOne
-
-        buildForRoot records root.RecordId
+        buildForRoot ordered (List.head ordered).RecordId
         
-    match validate records with
+    match validate ordered with
     | Ok _          -> buildTree ()
     | Error message -> failwith message 
