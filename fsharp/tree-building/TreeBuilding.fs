@@ -66,7 +66,6 @@ let rec private buildForRoot (records: Record list) (rootId: int): Tree =
     let children =
         records
         |> Seq.filter (fun record -> record.RecordId <> rootId && record.ParentId = rootId)
-        |> Seq.sortBy (fun record -> record.RecordId)
         |> Seq.map (fun record -> buildForRoot records record.RecordId)
         |> Seq.toList
 
@@ -75,11 +74,11 @@ let rec private buildForRoot (records: Record list) (rootId: int): Tree =
     else Branch (rootId, children)
 
 let buildTree (records: Record list): Tree =
+
     let ordered = records |> List.sortBy (fun record -> record.RecordId)
-    
-    let buildTree () =
-        buildForRoot ordered (List.head ordered).RecordId
-        
+
+    let buildTree () = buildForRoot ordered (List.head ordered).RecordId
+
     match validate ordered with
     | Ok _          -> buildTree ()
     | Error message -> failwith message 
