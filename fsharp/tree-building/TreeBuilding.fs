@@ -38,14 +38,27 @@ let private validate (records: Record list): Result<unit, ValidationMessage> =
     let rules =
         [
             (
-                List.tryHead >> Option.isSome,
+                (fun records -> match records |> List.tryHead with
+                                | Some head -> head.RecordId = head.ParentId
+                                | None -> false),
                 "records list does not contain root!"
             )
 
             (
                 List.forall (fun record -> record.RecordId >= record.ParentId),
-                "some record contains value smaller that its' parent one"
+                "at least one record contains value smaller that its' parent one"
             )
+            
+            (
+                (List.forall (fun record -> record.RecordId < records.Length)),
+                "at least one record contains value which exceeds records count"
+            )
+            
+            (
+                (fun records -> true), // todo: check list for cyclic dependencies
+                ""
+            )
+            
         ]
         |> Seq.filter (fun (validationFunc, _) -> validationFunc ordered |> not)
         |> Seq.toArray
