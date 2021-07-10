@@ -32,39 +32,21 @@ let children t =
     | Branch (_, c) -> c
     | Leaf _        -> []
 
-let rec private hasCycles (tree: Tree): bool =
-
-    let rec withAcc (subtree: Tree) (acc: int list): bool =
-        match subtree with
-        | Branch (id, children) ->
-            (acc |> List.contains id)
-            || (children |> Seq.exists (fun t -> withAcc t (id :: acc)))
-        | Leaf id -> acc |> List.contains id
-
-    withAcc tree []
-
 let private rules =
     [
-        (
-            (fun records -> match records |> List.tryHead with
-                            | Some head -> head.RecordId = head.ParentId
-                            | None -> false),
-            "records list does not contain root!"
-        )
-
         (
             (fun records -> (records
                              |> Seq.filter (fun r -> r.RecordId = r.ParentId)
                              |> Seq.length
-                             <= 1)),
-            "records list has more then one root!"
+                             |> ((=) 1))),
+            "there are not exactly one root-like record!"
         )
-        
+
         (
             List.forall (fun record -> record.RecordId >= record.ParentId),
             "at least one record contains value smaller that its' parent one!"
         )
-        
+
         (
             (fun records -> List.forall (fun record -> record.RecordId < records.Length) records),
             "at least one record contains value which exceeds records count!"
@@ -102,11 +84,7 @@ let buildTree (records: Record list): Tree =
             |> Seq.filter (fun record -> record.RecordId = record.ParentId)
             |> Seq.exactlyOne
 
-        let tree = buildForRoot records root.RecordId
-
-        if hasCycles tree
-        then failwith "tree contains cyclic dependencies!"
-        else tree
+        buildForRoot records root.RecordId
         
     match validate records with
     | Ok _          -> buildTree ()
