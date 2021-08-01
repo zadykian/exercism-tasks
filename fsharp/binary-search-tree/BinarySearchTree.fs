@@ -37,4 +37,19 @@ let create (items: 'T list): Tree<'T> =
     | head :: tail -> tail |> Seq.fold add (fromItem head)
     | _            -> invalidArg (nameof items) "list cannot be empty!"
 
-let sortedData (node: Tree<'T>): 'T list = failwith "You need to implement this function."
+let sortedData (node: Tree<'T>): 'T list =
+
+    let rec sortedLazy (tree: Tree<'T>): 'T seq =
+        seq {
+            match tree.Left with
+            | Some left -> yield! sortedLazy left
+            | None      -> ()
+
+            yield tree.Data
+
+            match tree.Right with
+            | Some right -> yield! sortedLazy right
+            | None       -> ()
+        }
+
+    sortedLazy node |> Seq.toList
