@@ -14,6 +14,12 @@ let right (node: Tree<'T>): Tree<'T> option = node.Right
 
 let data (node: Tree<'T>): 'T = node.Data
 
-let create (items: 'T list): Tree<'T> = failwith "You need to implement this function."
+/// Add item to tree
+let private add (tree: Tree<'T>) (item: 'T) : Tree<'T> = failwith "not implemented!"
+
+let create (items: 'T list): Tree<'T> =
+    match items with
+    | head :: tail -> tail |> Seq.fold add { Data = head; Left = None; Right = None }
+    | _            -> invalidArg (nameof items) "list cannot be empty!"
 
 let sortedData (node: Tree<'T>): 'T list = failwith "You need to implement this function."
