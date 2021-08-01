@@ -1,10 +1,8 @@
 ﻿module ArmstrongNumbers
 
-open System
-
 let private digits (number: int): byte list =
     let lsd (num: int): byte = byte (num % 10)
-    
+
     let rec getWithAcc (num: int) (acc: byte list) =
         if num >= 10 then getWithAcc (num / 10) (lsd num :: acc)
         else (lsd num :: acc)
