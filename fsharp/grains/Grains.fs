@@ -7,6 +7,15 @@ let private ifValidDo (func: int -> uint64) (n: int): Result<uint64,string> =
     then Ok (func n)
     else Error "square must be between 1 and 64"
 
-let square = ifValidDo @ fun nw -> 0UL
+let private squareUnsafe (n: int): uint64 = pown 2UL (n - 1)
 
-let total: Result<uint64,string> = failwith "You need to implement this function."
+let square = ifValidDo @ squareUnsafe
+
+let total: Result<uint64,string> =
+
+    let totalCount =
+        seq { for num in 1..64 -> num }
+        |> Seq.map squareUnsafe
+        |> Seq.sum
+
+    Ok totalCount
