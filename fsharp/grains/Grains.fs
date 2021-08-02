@@ -1,15 +1,13 @@
 ﻿module Grains
 
-let (@) func x = func x
-
-let private ifValidDo (func: int -> uint64) (n: int): Result<uint64,string> =
-    if (n >= 1 && n <= 64)
-    then Ok (func n)
-    else Error "square must be between 1 and 64"
+let inline private (@) func x = func x
 
 let private squareUnsafe (n: int): uint64 = pown 2UL (n - 1)
 
-let square = ifValidDo @ squareUnsafe
+let square (n: int): Result<uint64,string> =
+    if (n >= 1 && n <= 64)
+    then Ok @ squareUnsafe n
+    else Error "square must be between 1 and 64"
 
 let total: Result<uint64,string> =
 
