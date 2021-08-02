@@ -2,12 +2,13 @@
 
 let inline private (@) func x = func x
 
-let private distanceNonEmpty (strand1: string) (strand2: string): int =
-    failwith "not implemented!"
+let private distanceUnsafe (strand1: string) (strand2: string): int =
+    strand1
+    |> Seq.zip strand2
+    |> Seq.filter @ fun (l, r) -> l <> r
+    |> Seq.length
 
 let distance (strand1: string) (strand2: string): int option =
-    match (strand1, strand2) with
-    | "", "" -> Some 0
-    | _ , "" -> None
-    | "", _  -> None
-    | _ , _  -> Some @ distanceNonEmpty strand1 strand2
+    if strand1.Length <> strand2.Length
+    then None
+    else Some @ distanceUnsafe strand1 strand2
