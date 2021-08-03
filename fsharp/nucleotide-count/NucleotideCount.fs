@@ -1,23 +1,23 @@
 ﻿module NucleotideCount
 
-let inline private (>>=) r f = Option.bind f r
+let inline private (@) func x = func x
 
-let private rtn v = Some v
+let private tryAdd key value map =
+    match Map.tryFind key map with
+    | Some _ -> map
+    | None   -> Map.add key value map
 
-let private sequenceList ls =
-    let folder head tail = head >>= (fun h -> tail >>= (fun t -> h::t |> rtn))
-    List.foldBack folder ls (rtn List.empty)
-
-let nucleotideCounts (strand: string): Option<Map<char, int>> =
-
-    let groupToOption (key, chars) =
-        if ['A'; 'T'; 'G'; 'C'] |> Seq.contains key
-        then Some (key, chars |> Seq.length)
-        else None
-
+let nucleotideCountsUnsafe (strand: string): Map<char, int> =
     strand
     |> Seq.groupBy id
-    |> Seq.map groupToOption
-    |> Seq.toList
-    |> sequenceList
-    >>= (Map.ofList >> Some)
+    |> Seq.map @ fun (key, chars) -> (key, chars |> Seq.length)
+    |> Map.ofSeq
+    |> tryAdd 'A' 0
+    |> tryAdd 'T' 0
+    |> tryAdd 'G' 0
+    |> tryAdd 'C' 0
+
+let nucleotideCounts (strand: string): Option<Map<char, int>> =
+    let validate char = ['A'; 'T'; 'G'; 'C'] |> Seq.contains char
+    if Seq.exists (validate >> not) strand then None
+    else Some @ nucleotideCountsUnsafe strand
