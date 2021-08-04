@@ -1,7 +1,13 @@
 ﻿module RobotName
 
-let mkRobot() = failwith "You need to implement this function."
+type RobotName = string
 
-let name robot = failwith "You need to implement this function."
+type Robot = { Name: RobotName }
 
-let reset robot = failwith "You need to implement this function."
+let private generateName (): RobotName = failwith "not implemented!"
+
+let mkRobot (): Robot = { Name = generateName () }
+
+let name (robot: Robot): string = robot.Name
+
+let reset (robot: Robot): Robot = { robot with Name = generateName () }
