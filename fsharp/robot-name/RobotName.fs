@@ -4,7 +4,6 @@ type RobotName = string
 
 type Robot = { Name: RobotName }
 
-// see: https://stackoverflow.com/questions/2706500/how-do-i-generate-a-random-int-number
 let private random = System.Random ()
 
 let private generateName (): RobotName =
