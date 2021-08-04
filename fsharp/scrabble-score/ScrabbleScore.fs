@@ -1,3 +1,10 @@
 ﻿module ScrabbleScore
 
-let score word = failwith "You need to implement this function."
+let private letterScores: Map<Set<char>, byte> = failwith ""
+
+let private getScore (char: char): byte = failwith ""
+
+let score (word: string): uint =
+    word
+    |> Seq.map (getScore >> uint)
+    |> Seq.sum
