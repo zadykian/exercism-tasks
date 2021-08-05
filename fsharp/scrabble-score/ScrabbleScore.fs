@@ -3,15 +3,15 @@
 let inline private (@) func x = func x
 
 let private letterScores: (Set<char> * byte) list =
-    seq {
-        yield ['a'; 'e'; 'i'; 'o'; 'u'; 'l'; 'n'; 'r'; 's'; 't'], 1uy
-        yield ['d'; 'g']                                        , 2uy
-        yield ['b'; 'c'; 'm'; 'p']                              , 3uy
-        yield ['f'; 'h'; 'v'; 'w'; 'y']                         , 4uy
-        yield ['k']                                             , 5uy
-        yield ['j'; 'x']                                        , 8uy
-        yield ['q'; 'z']                                        , 10uy
-    }
+    [
+        ['a'; 'e'; 'i'; 'o'; 'u'; 'l'; 'n'; 'r'; 's'; 't'], 1uy
+        ['d'; 'g']                                        , 2uy
+        ['b'; 'c'; 'm'; 'p']                              , 3uy
+        ['f'; 'h'; 'v'; 'w'; 'y']                         , 4uy
+        ['k']                                             , 5uy
+        ['j'; 'x']                                        , 8uy
+        ['q'; 'z']                                        , 10uy
+    ]
     |> Seq.map @ fun (chars, score) -> (chars |> Set, score)
     |> Seq.toList
 
