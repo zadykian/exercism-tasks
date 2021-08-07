@@ -1,5 +1,5 @@
 ﻿module Seq
 
-let keep pred xs = failwith "You need to implement this function."
+let keep (pred: 'T -> bool) (xs: 'T seq): 'T seq = failwith "You need to implement this function."
 
-let discard pred xs = failwith "You need to implement this function."
+let discard (pred: 'T -> bool) (xs: 'T seq): 'T seq = failwith "You need to implement this function."
