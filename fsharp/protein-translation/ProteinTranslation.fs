@@ -31,7 +31,7 @@ let private isStopCodon (codon: Codon): bool =
 let proteins rna =
     rna
     |> Seq.chunkBySize 3
-    |> Seq.map @ Codon
+    |> Seq.map Codon
     |> Seq.takeWhile (isStopCodon >> not)
     |> Seq.map toAminoAcid
     |> Seq.toList
