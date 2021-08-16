@@ -1,37 +1,32 @@
 ﻿module PhoneNumber
 
-open FParsec
 open System
 open System.Text.RegularExpressions
 
-/// String parser without user state.
-type private StrParser = Parser<string, unit>
+type private acc = Result<byte, string> list
 
-let private isBetween<'T when 'T :> IComparable<'T>>
-    (range: 'T * 'T) (value: 'T): bool =
-    let leftBound, rightBound = range
-    value.CompareTo(leftBound) >= 0 && value.CompareTo(rightBound)  <= 0
+let sequence list =
+    let folder result current =
+        result
+        |> Result.bind (fun list ->
+                        match current with
+                        | Ok ok -> Ok (Seq.append list [ok])
+                        | Error error -> Error error)
 
-let private codeParser : StrParser =
-    parse {
-        let! codeFirstDigit = satisfy (isBetween ('2', '9'))
-        let! codeEnd = manyMinMaxSatisfy 2 2 isDigit
-        return $"{codeFirstDigit}{codeEnd}"
-    }
-
-let private parser : Parser<uint64, unit> =
-    parse {
-        do!  skipAnyOf ['.'; '('; '-']
-        let! areaCode = codeParser
-        do!  skipAnyOf ['.'; ')'; '-']
-        let! exchangeCode = codeParser
-        do!  skipAnyOf ['.'; '-']
-        let! numberEnd = manyMinMaxSatisfy 4 4 isDigit
-        return [areaCode; exchangeCode; numberEnd] |> String.Concat |> uint64
-    }
+    list |> Seq.fold folder (Ok Seq.empty)
 
 let clean (input: string): Result<uint64, string> =
-    let withoutCountryCode = Regex.Replace(input, "(^(\+?)1)|\s+", "")
-    match run parser withoutCountryCode with
-    | Success (num, _, _) -> Result.Ok    num
-    | Failure (msg, _, _) -> Result.Error msg
+    let refined = Regex.Replace(input, "(^(\+?)1)|\s+|\(|\)\.|-", "")
+
+    let folder (digits: acc) (char: char): acc =
+        if Char.IsPunctuation char
+        then Error "punctuations not permitted"
+
+    
+    let res =
+        refined
+        |> Seq.fold folder []
+
+    match sequence res with
+    | Ok digits -> digits |> Seq.map char |> Seq.toArray |> String |> uint64 |> Ok
+    | Error error -> Error error

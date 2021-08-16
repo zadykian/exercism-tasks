@@ -88,26 +88,6 @@ let ``Invalid if area code starts with 1 on valid 11-digit number`` () =
     clean "1 (123) 456-7890" |> should equal expected
 
 [<Fact>]
-let ``Invalid if area code contains more digits on valid 11-digit number`` () =
-    let expected: Result<uint64,string> = Error "area code must contain 3 digits"
-    clean "1 (2345) 456-789" |> should equal expected
-
-[<Fact>]
-let ``Invalid if area code contains more digits on valid 11-digit number with spaces`` () =
-    let expected: Result<uint64,string> = Error "area code must contain 3 digits"
-    clean "1 2345 456 789" |> should equal expected
-
-[<Fact>]
-let ``Invalid if area code contains less digits on valid 11-digit number`` () =
-    let expected: Result<uint64,string> = Error "area code must contain 3 digits"
-    clean "1 (23) 456-78901" |> should equal expected
-
-[<Fact>]
-let ``Invalid if area code contains less digits on valid 11-digit number with spaces`` () =
-    let expected: Result<uint64,string> = Error "area code must contain 3 digits"
-    clean "1 23 456 78901" |> should equal expected
-
-[<Fact>]
 let ``Invalid if exchange code starts with 0 on valid 11-digit number`` () =
     let expected: Result<uint64,string> = Error "exchange code cannot start with zero"
     clean "1 (223) 056-7890" |> should equal expected
@@ -116,23 +96,3 @@ let ``Invalid if exchange code starts with 0 on valid 11-digit number`` () =
 let ``Invalid if exchange code starts with 1 on valid 11-digit number`` () =
     let expected: Result<uint64,string> = Error "exchange code cannot start with one"
     clean "1 (223) 156-7890" |> should equal expected
-
-[<Fact>]
-let ``Invalid if exchange code contains more digits on valid 11-digit number`` () =
-    let expected: Result<uint64,string> = Error "exchange code must contain 3 digits"
-    clean "1 (223) 2567-789" |> should equal expected
-
-[<Fact>]
-let ``Invalid if exchange code contains more digits on valid 11-digit number with spaces`` () =
-    let expected: Result<uint64,string> = Error "exchange code must contain 3 digits"
-    clean "1 223 2567 789" |> should equal expected
-
-[<Fact>]
-let ``Invalid if exchange code contains less digits on valid 11-digit number`` () =
-    let expected: Result<uint64,string> = Error "exchange code must contain 3 digits"
-    clean "1 (223) 25-67890" |> should equal expected
-
-[<Fact>]
-let ``Invalid if exchange code contains less digits on valid 11-digit number with spaces`` () =
-    let expected: Result<uint64,string> = Error "exchange code must contain 3 digits"
-    clean "1 223 25 67890" |> should equal expected
