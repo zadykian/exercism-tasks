@@ -10,7 +10,7 @@ open PhoneNumber
 [<Fact>]
 let ``Cleans the number`` () =
     let expected: Result<uint64,string> = Ok 2234567890UL
-    clean "(214) 567-8901" |> should equal expected
+    clean "(223) 456-7890" |> should equal expected
 
 [<Fact>]
 let ``Cleans numbers with dots`` () =

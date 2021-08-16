@@ -14,24 +14,24 @@ let private isBetween<'T when 'T :> IComparable<'T>>
 
 let private codeParser : StrParser =
     parse {
-        let! codeFirstDigit = digit >>= fun char -> satisfy (isBetween ('2', '9'))
+        let! codeFirstDigit = satisfy (isBetween ('2', '9'))
         let! codeEnd = manyMinMaxSatisfy 2 2 isDigit
         return $"{codeFirstDigit}{codeEnd}"
     }
 
 let private parser : Parser<uint64, unit> =
     parse {
-        do!  skipAnyOf [' '; '.'; '('; '-']
+        do!  skipAnyOf ['.'; '('; '-']
         let! areaCode = codeParser
-        do!  skipAnyOf [' '; '.'; ')'; '-']
+        do!  skipAnyOf ['.'; ')'; '-']
         let! exchangeCode = codeParser
-        do!  skipAnyOf [' '; '.'; '-']
+        do!  skipAnyOf ['.'; '-']
         let! numberEnd = manyMinMaxSatisfy 4 4 isDigit
         return [areaCode; exchangeCode; numberEnd] |> String.Concat |> uint64
     }
 
 let clean (input: string): Result<uint64, string> =
-    let withoutCountryCode = Regex.Replace(input, "^(\+?)1", "")
+    let withoutCountryCode = Regex.Replace(input, "(^(\+?)1)|\s+", "")
     match run parser withoutCountryCode with
     | Success (num, _, _) -> Result.Ok    num
     | Failure (msg, _, _) -> Result.Error msg
