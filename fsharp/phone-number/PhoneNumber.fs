@@ -3,23 +3,26 @@
 open System
 open System.Text.RegularExpressions
 
-let private parseRefined (refined: string) =
-    let areaCodeFst     = refined.[0] |> string |> Byte.Parse
-    let exchangeCodeFst = refined.[3] |> string |> Byte.Parse
+let areaCodeFst     (refined: string): byte = refined.[0] |> string |> Byte.Parse
 
-    if   areaCodeFst     = 0uy then Error "area code cannot start with zero"
-    elif areaCodeFst     = 1uy then Error "area code cannot start with one"
-    elif exchangeCodeFst = 0uy then Error "exchange code cannot start with zero"
-    elif exchangeCodeFst = 1uy then Error "exchange code cannot start with one"
-    else                            Ok (uint64 refined)
+let exchangeCodeFst (refined: string): byte = refined.[3] |> string |> Byte.Parse
+
+let private rules: ((string -> bool) * string) list =
+    [
+        (fun r -> r |> Seq.exists Char.IsPunctuation   ), "punctuations not permitted"
+        (fun r -> r |> Seq.exists Char.IsLetter        ), "letters not permitted"
+        (fun r -> r |> Seq.exists (Char.IsDigit >> not)), "invalid characters"
+        (fun r -> r.Length = 11                        ), "11 digits must start with 1"
+        (fun r -> r.Length > 11                        ), "more than 11 digits"
+        (fun r -> r.Length < 10                        ), "incorrect number of digits"
+        (fun r -> r |> areaCodeFst     = 0uy           ), "area code cannot start with zero"
+        (fun r -> r |> areaCodeFst     = 1uy           ), "area code cannot start with one"
+        (fun r -> r |> exchangeCodeFst = 0uy           ), "exchange code cannot start with zero"
+        (fun r -> r |> exchangeCodeFst = 1uy           ), "exchange code cannot start with one"
+    ]
 
 let clean (input: string): Result<uint64, string> =
     let refined = Regex.Replace(input, @"(^(\+?)1)|\s+|\(|\)|\.|\-", "")
-
-    if   refined |> Seq.exists Char.IsPunctuation    then Error "punctuations not permitted"
-    elif refined |> Seq.exists Char.IsLetter         then Error "letters not permitted"
-    elif refined |> Seq.exists (Char.IsDigit >> not) then Error "invalid characters"
-    elif refined.Length = 11                         then Error "11 digits must start with 1"
-    elif refined.Length > 11                         then Error "more than 11 digits"
-    elif refined.Length < 10                         then Error "incorrect number of digits"
-    else refined |> parseRefined
+    match rules |> List.tryFind (fun tuple -> refined |> (fst tuple)) with
+    | Some (_, error) -> Error error
+    | None            -> Ok (uint64 refined)
