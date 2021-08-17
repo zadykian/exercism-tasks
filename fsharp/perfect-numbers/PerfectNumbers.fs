@@ -2,8 +2,15 @@
 
 type Classification = Perfect | Abundant | Deficient 
 
-let private getPrimeFactors (number: uint): uint seq = failwith "not implemented!"
+let private getPrimeFactors (number: uint): uint list =
+    let rec getFactor num proposed acc =
+        if   proposed = num      then num :: acc
+        elif num % proposed = 0u then getFactor (num / proposed) proposed (proposed :: acc)
+        else getFactor num (proposed + 1u) acc
 
+    if   number = 1u then [1u]
+    else getFactor number 2u []
+    
 let private classifyUnsafe (number: uint): Classification =
     let aliquotSum =
         number
