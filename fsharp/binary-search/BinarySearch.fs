@@ -8,10 +8,12 @@ let rec private findImpl (offset: int) (input: int array) (value: int) : Index o
         let index = input.Length / 2
         let middleValue = input.[index]
 
+        // go to right if possible
         if middleValue < value then
             if   index + 1 >= input.Length then None
             else findImpl (offset + index + 1) input.[index + 1..] value
 
+        // go to left if possible
         elif middleValue > value then
             if   index = 0 then None
             else findImpl offset input.[..index - 1] value
