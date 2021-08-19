@@ -13,11 +13,25 @@ type Character =
         Hitpoints    : int
     }
 
-let modifier x =
-    failwith "You need to implement this function."
+let modifier (constitution: int) =
+    constitution - 10
+    |> float
+    |> fun value -> Math.Round(value / float 2, MidpointRounding.ToNegativeInfinity)
+    |> int
 
-let ability () = 
-    failwith "You need to implement this function."
+let private random = Random ()
+
+let ability () = random.Next(3, 18)
 
 let createCharacter () : Character =
-    failwith "You need to implement this function."
+    let constitution = ability ()
+
+    {
+        Strength     = ability ()
+        Dexterity    = ability ()
+        Constitution = constitution
+        Intelligence = ability ()
+        Wisdom       = ability ()
+        Charisma     = ability ()
+        Hitpoints    = 10 + modifier constitution
+    }
