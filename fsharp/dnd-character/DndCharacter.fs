@@ -2,13 +2,22 @@
 
 open System
 
+type Character =
+    {
+        Strength     : int
+        Dexterity    : int
+        Constitution : int
+        Intelligence : int
+        Wisdom       : int
+        Charisma     : int
+        Hitpoints    : int
+    }
+
 let modifier x =
     failwith "You need to implement this function."
 
-let ability() = 
+let ability () = 
     failwith "You need to implement this function."
 
-// TODO: define the Character type
-
-let createCharacter() =
+let createCharacter () : Character =
     failwith "You need to implement this function."
