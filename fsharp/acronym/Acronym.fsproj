@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
 	<Import Project="$(MSBuildProjectDirectory)\..\common.props"/>
-  
+
 	<ItemGroup>
 		<Compile Include="Acronym.fs"/>
 		<Compile Include="AcronymTests.fs"/>

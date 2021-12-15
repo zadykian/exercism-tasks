@@ -1,3 +1,3 @@
 ﻿module Diamond
 
-// TODO: implement this module
+let make _ = failwith "not implemented!"
