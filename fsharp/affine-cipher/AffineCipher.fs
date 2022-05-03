@@ -35,10 +35,9 @@ let private decodeChar a b char =
     let decodedDefault () = ((mmi a letters.Length) * (encodedCharIndex () - b)) % letters.Length
 
     let decodedCharIndex () =
-
-        match encodedCharIndex () with
-        | i when i > b -> decodedDefault ()
-        | _ -> decodedDefault () + letters.Length
+        match decodedDefault () with
+        | i when i >= 0 -> i
+        | i -> i + letters.Length
 
     if Char.IsDigit char
     then char
